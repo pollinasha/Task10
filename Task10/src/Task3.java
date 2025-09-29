@@ -1,12 +1,15 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Task3 {
 
     // Дополните объявление поля friendsContactBook, которое будет хранить в себе список номеров телефонов друзей
-    private static ContactBook...friendsContactBook =...
-            // Напишите объявления полей colleaguesContactBook, classmatesContactBook и relativesContactBook,
-            // которые будут хранить списки электронных адресов, соцсетей и почтовых адресов соответственно
-            ...
+    private static ContactBook<Phone> friendsContactBook = new ContactBook<>();
+    // Напишите объявления полей colleaguesContactBook, classmatesContactBook и relativesContactBook,
+    // которые будут хранить списки электронных адресов, соцсетей и почтовых адресов соответственно
+    private static ContactBook<Email> colleaguesContactBook = new ContactBook<>();
+    private static ContactBook<SocialNetworkContact> classmatesContactBook = new ContactBook<>();
+    private static ContactBook<Address> relativesContactBook = new ContactBook<>();
 
 
     public static void main(String[] args) {
@@ -67,170 +70,174 @@ public class Task3 {
 
 }
 
-
 // Унаследуйте класс от базового класса, описывающего контакт Contact
-class Address ...{
-private final String city;
-private final String address;
+class Address extends Contact{
+    private final String city;
+    private final String address;
 
-public Address(String name, String city, String address) {
-        ...
-    this.city = city;
-    this.address = address;
+    public Address(String name, String city, String address) {
+        super(name);
+        this.city = city;
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    // Метод sendMessage переопределяет метод базового класса
+    @Override
+    public void sendMessage() {
+        System.out.println("Отправим открытку в город " + city + " по адресу: " + address);
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Город: " + getCity());
+        System.out.println("Адрес: " + getAddress());
+    }
 }
-
-public String getCity() {
-    return city;
-}
-
-public String getAddress() {
-    return address;
-}
-
-// Метод sendMessage переопределяет метод базового класса
-        ...
-
-public void sendMessage() {
-    System.out.println("Отправим открытку в город " + city + " по адресу: " + address);
-}
-
-        ...
-
-public void print() {
-    System.out.println("Город: " + getCity());
-    System.out.println("Адрес: " + getAddress());
-}
-
-        }
-
 
 // Дополните объявление класса Contact
-public ...
-
-Contact {
+abstract class Contact {
     // Класс должен содержать одно полe - имя пользователя name
-        ...
+    protected final String name;
+
+    Contact(String name) {
+        this.name = name;
+    }
 
     // И два метода - sendMessage() для отправки сообщения и print() для печати информации о контакте
-        ...
-}
+    public abstract void sendMessage();
+    public abstract void print();
 
+    public String getName() {
+        return name;
+    }
+}
 
 // Ограничьте класс ContactBook так, чтобы он могу хранить в себе только список контактов
-class ContactBook ...{
-        // Объявите поле класса contacts - список контактов книги
-        ...
+class ContactBook<T extends Contact>{
+    // Объявите поле класса contacts - список контактов книги
+    ArrayList<T> contacts = new ArrayList<>();
 
-public void addContact(...contact) {
-    contacts.add(contact);
-}
+    public void addContact(T contact) {
+        contacts.add(contact);
+    }
 
-public void printList() {
-    // Выведите на экран весь список контактов книги
-        ...
-    System.out.println("Имя: " + contact.getName());
-    contact.print();
-}
-
-public void congratulate(String name) {
-    boolean contactPresented = false; //проверяем есть ли контакт в базе
-    // Найдите контакт в книге по имени, и отправьте ему сообщение с помощью метода sendMessage()
-        ...
-    System.out.println("Поздравим с Новым годом ваш контакт из записной книжки: " + name);
-    contact.sendMessage();
-
-    // Если контакт не найден, выведите соответствующее сообщение
-    System.out.println("Не найден контакт с указанным именем.");
-}
-
+    public void printList() {
+        // Выведите на экран весь список контактов книги
+        for(T contact : contacts) {
+            System.out.println("Имя: " + contact.getName());
+            contact.print();
         }
+    }
 
+    public void congratulate(String name) {
+        boolean contactPresented = false; //проверяем есть ли контакт в базе
+        // Найдите контакт в книге по имени, и отправьте ему сообщение с помощью метода sendMessage()
+        T contact = null;
+        for (T item : contacts)
+            if (item.getName().equals(name)) {
+                contactPresented = true;
+                contact = item;
+                break;
+            }
+        if (contact != null) {
+            System.out.println("Поздравим с Новым годом ваш контакт из записной книжки: " + name);
+            contact.sendMessage();
+        }
+        else {
+            // Если контакт не найден, выведите соответствующее сообщение
+            System.out.println("Не найден контакт с указанным именем.");
+        }
+    }
+}
 
 // Унаследуйте класс от базового класса, описывающего контакт Contact
-class Email ...{
-private final String email;
+class Email extends Contact{
+    private final String email;
 
-public Email(String name, String email) {
-        ...
-    this.email = email;
+    public Email(String name, String email) {
+        super(name);
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    // Метод sendMessage переопределяет метод базового класса
+    @Override
+    public void sendMessage() {
+        System.out.println("Отправим новогоднюю картинку коллеге на электронную почту " + email);
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Email: " + getEmail());
+    }
 }
-
-public String getEmail() {
-    return email;
-}
-
-// Метод sendMessage переопределяет метод базового класса
-        ...
-
-public void sendMessage() {
-    System.out.println("Отправим новогоднюю картинку коллеге на электронную почту " + email);
-}
-
-        ...
-
-public void print() {
-    System.out.println("Email: " + getEmail());
-}
-        }
 
 // Унаследуйте класс от базового класса, описывающего контакт Contact
-class Phone ...{
-private final String phoneNumber;
+class Phone extends Contact{
+    private final String phoneNumber;
 
-public Phone(String name, String phoneNumber) {
-        ...
-    this.phoneNumber = phoneNumber;
+    public Phone(String name, String phoneNumber) {
+        super(name);
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    // Метод sendMessage переопределяет метод базового класса
+    @Override
+    public void sendMessage() {
+        System.out.println("Звоним другу по номеру " + phoneNumber + " и зовем на кофе.");
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Номер телефона: " + getPhoneNumber());
+    }
 }
-
-public String getPhoneNumber() {
-    return phoneNumber;
-}
-
-// Метод sendMessage переопределяет метод базового класса
-        ...
-
-public void sendMessage() {
-    System.out.println("Звоним другу по номеру " + phoneNumber + " и зовем на кофе.");
-}
-
-        ...
-
-public void print() {
-    System.out.println("Номер телефона: " + getPhoneNumber());
-}
-        }
-
 
 // Унаследуйте класс от базового класса, описывающего контакт Contact
-class SocialNetworkContact ...{
-private final String socialNetwork;
-private final String username;
+class SocialNetworkContact extends Contact{
+    private final String socialNetwork;
+    private final String username;
 
-public SocialNetworkContact(String name, String socialNetwork, String username) {
-        ...
-    this.socialNetwork = socialNetwork;
-    this.username = username;
+    public SocialNetworkContact(String name, String socialNetwork, String username) {
+        super(name);
+        this.socialNetwork = socialNetwork;
+        this.username = username;
+    }
+
+    public String getSocialNetwork() {
+        return socialNetwork;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    // Метод sendMessage переопределяет метод базового класса
+    @Override
+    public void sendMessage() {
+        System.out.println("Отправим забавный стикер одногруппнику в соцсети " + socialNetwork + ", имя пользователя " + username);
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Социальная сеть: " + socialNetwork);
+        System.out.println("Имя пользователя: " + username);
+    }
 }
 
-public String getSocialNetwork() {
-    return socialNetwork;
-}
 
-public String getUsername() {
-    return username;
-}
-
-// Метод sendMessage переопределяет метод базового класса
-        ...
-
-public void sendMessage() {
-    System.out.println("Отправим забавный стикер одногруппнику в соцсети " + socialNetwork + ", имя пользователя " + username);
-}
-
-        ...
-
-public void print() {
-    System.out.println("Социальная сеть: " + socialNetwork);
-    System.out.println("Имя пользователя: " + username);
-}
-        }
